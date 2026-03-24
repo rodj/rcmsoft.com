@@ -322,6 +322,106 @@ form textarea {
 	min-height: 130px;
 }
 
+/* ── Reading Cards ───────────────────────── */
+.reading-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 24px;
+	max-width: 1100px;
+}
+
+.reading-card {
+	background: var(--bg-white);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	overflow: hidden;
+	transition: box-shadow 0.2s, transform 0.1s;
+	display: flex;
+	flex-direction: column;
+}
+
+section:nth-child(even) .reading-card {
+	background: var(--bg);
+}
+
+.reading-card:hover {
+	box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+	transform: translateY(-2px);
+}
+
+.reading-card-banner {
+	height: 80px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 2.2rem;
+	flex-shrink: 0;
+}
+
+.reading-card-body {
+	padding: 18px 22px 22px;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+.reading-card .rc-meta {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 10px;
+}
+
+.reading-card .rc-source {
+	font-size: 0.75rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: var(--text-muted);
+}
+
+.reading-card .rc-date {
+	font-size: 0.75rem;
+	color: var(--border);
+	color: #a0aec0;
+}
+
+.reading-card h3 {
+	font-size: 1rem;
+	font-weight: 700;
+	color: var(--primary);
+	line-height: 1.35;
+	margin-bottom: 10px;
+}
+
+.reading-card h3 a {
+	color: var(--primary);
+}
+
+.reading-card h3 a:hover {
+	color: var(--accent);
+	text-decoration: none;
+}
+
+.reading-card .rc-commentary {
+	font-size: 0.92rem;
+	color: var(--text-muted);
+	line-height: 1.65;
+	flex: 1;
+	margin-bottom: 16px;
+}
+
+.reading-card .rc-link {
+	font-size: 0.85rem;
+	font-weight: 700;
+	color: var(--accent);
+	align-self: flex-start;
+}
+
+.reading-card .rc-link:hover {
+	text-decoration: underline;
+}
+
 /* ── Article Page ────────────────────────── */
 .article-header {
 	background: var(--hero-bg);
