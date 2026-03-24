@@ -5,6 +5,26 @@ Project-specific log for rcmsoft.com. New entries at top.
 
 ---
 
+## 2026-03-24 — Email setup (robert@rcmsoft.com)
+
+Broke when DNS was switched from Winhost nameservers to Namecheap BasicDNS — the MX record
+that Winhost had been providing automatically was lost. Fixed and fully working as of 2026-03-24.
+
+### Architecture (mirrors robert@rodj.me setup)
+- **Mail server:** Winhost SmarterMail at `m02.internetmailserver.net`
+- **Webmail:** https://m02.internetmailserver.net (login: robert@rcmsoft.com)
+- **Incoming:** MX record @ → m02.internetmailserver.net (priority 10) at Namecheap
+- **Forwarding:** SmarterMail auto-forwards all incoming mail to rodjmartin@gmail.com
+- **Sending:** Gmail configured with "Send mail as: robert@rcmsoft.com" (SMTP via m02.internetmailserver.net:587, TLS)
+  - Must manually select robert@rcmsoft.com from the From dropdown when composing
+  - Gmail does not default to it automatically
+
+### MX record (Namecheap Advanced DNS → Mail Settings → Custom MX)
+- Type: MX, Host: @, Value: m02.internetmailserver.net, Priority: 10
+- Note: MX is in the "Mail Settings" section, not "Host Records"
+
+---
+
 ## 2026-03-24 — Full site launch
 
 ### Site creation

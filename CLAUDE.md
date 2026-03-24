@@ -97,6 +97,18 @@ Use lowercase kebab-case: `getting-started-with-claude-code.html`
 </div>
 ```
 
+## Email (robert@rcmsoft.com)
+
+Same architecture as robert@rodj.me. Mail is hosted on Winhost SmarterMail; Gmail is used as the client.
+
+- **Mail server:** `m02.internetmailserver.net` (Winhost)
+- **Webmail:** https://m02.internetmailserver.net (login: robert@rcmsoft.com)
+- **MX record:** @ → m02.internetmailserver.net, priority 10 (Namecheap Mail Settings → Custom MX)
+- **Forwarding:** SmarterMail forwards incoming mail to rodjmartin@gmail.com
+- **Send-as:** Gmail "Send mail as" configured with SMTP m02.internetmailserver.net:587 TLS
+  - Must manually select robert@rcmsoft.com from From dropdown when composing
+- **If email breaks again:** First check MX record exists at Namecheap (Mail Settings section, not Host Records). Then verify forwarding rule in SmarterMail webmail.
+
 ## Contact Form (Formspree)
 
 Contact form at `contact.html` uses Formspree.
