@@ -7,12 +7,14 @@
 **Owner:** Robert Martin (rodj)
 **Tech Stack:** Plain HTML/CSS, no build tools, no frameworks
 **Hosting:** GitHub Pages (free), served from `main` branch root
-**Repository:** `github.com/rodj/rcmsoft.com` *(to be created)*
-**Domain:** rcmsoft.com *(domain registrar: TBD)*
+**Repository:** `github.com/rodj/rcmsoft.com`
+**Domain:** rcmsoft.com (Namecheap, BasicDNS, pointing to GitHub Pages)
 
 ## Work Log
 
-Use `doc/worklog.md` for this project (not the global Personal_Work_Log.md).
+**This project overrides the global work log policy.**
+Use `doc/worklog.md` — do NOT log to the global Personal_Work_Log.md.
+New entries at the top of worklog.md.
 New entries at the top.
 
 ## Coding Standards
@@ -98,32 +100,34 @@ Use lowercase kebab-case: `getting-started-with-claude-code.html`
 ## Contact Form (Formspree)
 
 Contact form at `contact.html` uses Formspree.
-**TODO:** Create Formspree account at formspree.io, create a form for robert@rcmsoft.com, and replace `YOUR_FORM_ID` in `contact.html` with the actual form ID.
-The action URL format: `https://formspree.io/f/YOUR_FORM_ID`
+**Endpoint:** `https://formspree.io/f/xeepjorj` (already configured)
+Account: rodjmartin@gmail.com at formspree.io
 
 ## Google Analytics
 
-**TODO:** Create GA4 property for rcmsoft.com at analytics.google.com.
-All pages have the GA snippet commented out. Once the measurement ID is known (format: `G-XXXXXXXXXX`), uncomment and replace the placeholder in all HTML files.
+**Measurement ID:** `G-C2J13YL8DH`
+GA4 snippet is live and uncommented on all HTML pages.
+Account: rodjmartin@gmail.com at analytics.google.com
+
+## Google Search Console
+
+Verified via URL prefix method (GA tag detection). Sitemap not yet submitted.
+**TODO:** Submit https://rcmsoft.com/sitemap.xml in Search Console → Sitemaps
 
 ## GitHub Pages Setup
 
-**TODO: Complete these steps to go live:**
+**Status: Complete.** Repo: github.com/rodj/rcmsoft.com, main branch, root folder.
+Custom domain: rcmsoft.com (CNAME file present).
+DNS: Namecheap BasicDNS, 4 A records → GitHub Pages IPs, www CNAME → rodj.github.io.
+**TODO:** Once DNS propagates, enable "Enforce HTTPS" in repo Settings → Pages.
 
-1. Create repo at github.com/rodj/rcmsoft.com (or rcmsoft-com)
-2. Push this directory to the repo's `main` branch
-3. Go to repo Settings → Pages → set Source to `main` branch, root folder
-4. Add custom domain `rcmsoft.com` in the Pages settings
-5. At domain registrar, set DNS A records to GitHub Pages IPs:
-   ```
-   185.199.108.153
-   185.199.109.153
-   185.199.110.153
-   185.199.111.153
-   ```
-6. Also add CNAME record: `www` → `rodj.github.io`
-7. Wait for DNS propagation, then enable "Enforce HTTPS" in Pages settings
-8. Optional: Move DNS to Cloudflare for CDN + free SSL (as done with pointe.com)
+GitHub Pages IPs (for reference):
+```
+185.199.108.153
+185.199.109.153
+185.199.110.153
+185.199.111.153
+```
 
 ## Sitemap Maintenance
 
@@ -132,8 +136,6 @@ Add an entry with:
 - `<loc>https://rcmsoft.com/articles/filename.html</loc>`
 - `<lastmod>YYYY-MM-DD</lastmod>`
 - `<priority>0.8</priority>`
-
-Also submit the sitemap URL to Google Search Console once the site is live.
 
 ## Brand / Voice Notes
 
