@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Creating an MCP Server for Python to Automate Microsoft Word — RCMSoft</title>
+	<meta name="description" content="A step-by-step guide to building a Model Context Protocol (MCP) server in Python that lets Claude and other AI tools create and edit Microsoft Word documents automatically.">
+	<link rel="stylesheet" href="../../style.css">
+	<!-- Google Analytics: replace G-XXXXXXXXXX -->
+	<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+	<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script> -->
+</head>
+<body>
+
+<header>
+	<div class="site-title">RCM<span>Soft</span></div>
+</header>
+
+<nav>
+	<a href="../../index.html">Home</a>
+	<a href="../../index.html#services">Services</a>
+	<a href="../../articles.html" class="active">Articles</a>
+	<a href="../../about.html">About</a>
+	<a href="../../contact.html">Contact</a>
+</nav>
+
+<div class="article-header">
+	<span class="tag">Automation</span>
+	<h1>Creating an MCP Server for Python to Automate Microsoft Word Document Editing and Creation</h1>
+	<p class="article-meta">By Robert Martin &mdash; RCMSoft &mdash; [PUBLISH DATE]</p>
+</div>
+
+<article class="content">
+
+	<p>If you've been using Claude Code (or any AI tool that supports MCP), you've probably noticed that its real power comes from connecting it to external systems. In this article I'll walk through building a custom MCP server in Python that lets AI tools create, edit, and format Microsoft Word documents using the <code>python-docx</code> library.</p>
+
+	<p>By the end, you'll have a working MCP server you can register with Claude Code and then instruct it in plain English to generate Word documents: contracts, reports, form letters — whatever your business needs.</p>
+
+	<h2>What is MCP?</h2>
+
+	<p>Model Context Protocol (MCP) is an open standard developed by Anthropic that defines how AI assistants communicate with external tools. Think of it as a plugin system: you write a server that exposes a set of "tools" (functions), and any MCP-compatible AI client — including Claude Code — can discover and call those tools.</p>
+
+	<p>The protocol uses JSON-RPC over stdio or HTTP. Your MCP server is just a process that responds to tool-call requests. The AI describes what it wants to do; your server does the actual work and returns a result.</p>
+
+	<h2>Prerequisites</h2>
+
+	<ul>
+		<li>Python 3.10 or higher</li>
+		<li>Claude Code installed (<code>npm install -g @anthropic-ai/claude-code</code>)</li>
+		<li>Basic Python familiarity</li>
+	</ul>
+
+	<p>Install the required packages:</p>
+
+	<pre><code>pip install mcp python-docx</code></pre>
+
+	<div class="tip-box">
+		<strong>Note</strong>
+		The <code>mcp</code> Python package is Anthropic's official SDK for building MCP servers. It handles all the protocol plumbing so you can focus on writing your tools.
+	</div>
+
+	<h2>Project structure</h2>
+
+	<p>We'll keep this simple:</p>
+
+	<pre><code>word-mcp-server/
+├── server.py        # The MCP server
+└── requirements.txt</code></pre>
+
+	<h2>Building the server</h2>
+
+	<p>Here's the complete <code>server.py</code>. I'll explain each section below.</p>
+
+	<pre><code>from mcp.server.fastmcp import FastMCP
+from docx import Document
+from docx.shared import Pt, RGBColor, Inches
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+import os
+
+mcp = FastMCP("Word Automation")
+
+
+@mcp.tool()
+def create_document(file_path: str, title: str = "") -> str:
+    """Create a new Word document at the given path, with an optional title heading."""
+    doc = Document()
+    if title:
+        heading = doc.add_heading(title, level=0)
+        heading.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    doc.save(file_path)
+    return f"Created document: {file_path}"
+
+
+@mcp.tool()
+def add_paragraph(file_path: str, text: str, style: str = "Normal") -> str:
+    """Add a paragraph to an existing Word document.
+
+    Style options: Normal, Heading1, Heading2, Heading3, Quote
+    """
+    doc = Document(file_path)
+    style_map = {
+        "Normal":   "Normal",
+        "Heading1": "Heading 1",
+        "Heading2": "Heading 2",
+        "Heading3": "Heading 3",
+        "Quote":    "Quote",
+    }
+    doc.add_paragraph(text, style=style_map.get(style, "Normal"))
+    doc.save(file_path)
+    return f"Added paragraph to {file_path}"
+
+
+@mcp.tool()
+def add_table(file_path: str, headers: list[str], rows: list[list[str]]) -> str:
+    """Add a table to an existing Word document.
+
+    headers: list of column header strings
+    rows: list of rows, each row is a list of cell strings
+    """
+    doc = Document(file_path)
+    table = doc.add_table(rows=1, cols=len(headers))
+    table.style = "Table Grid"
+
+    # Header row
+    header_row = table.rows[0].cells
+    for i, header in enumerate(headers):
+        header_row[i].text = header
+        run = header_row[i].paragraphs[0].runs[0]
+        run.bold = True
+
+    # Data rows
+    for row_data in rows:
+        row = table.add_row().cells
+        for i, cell_text in enumerate(row_data):
+            row[i].text = cell_text
+
+    doc.save(file_path)
+    return f"Added {len(rows)}-row table to {file_path}"
+
+
+@mcp.tool()
+def add_page_break(file_path: str) -> str:
+    """Add a page break to an existing Word document."""
+    doc = Document(file_path)
+    doc.add_page_break()
+    doc.save(file_path)
+    return f"Added page break to {file_path}"
+
+
+@mcp.tool()
+def read_document_text(file_path: str) -> str:
+    """Read all text content from an existing Word document."""
+    doc = Document(file_path)
+    paragraphs = [p.text for p in doc.paragraphs if p.text.strip()]
+    return "\n\n".join(paragraphs) if paragraphs else "(document is empty)"
+
+
+@mcp.tool()
+def list_document_styles(file_path: str) -> str:
+    """List all available paragraph styles in a Word document."""
+    doc = Document(file_path)
+    styles = [s.name for s in doc.styles if s.type.name == "PARAGRAPH"]
+    return "\n".join(sorted(styles))
+
+
+if __name__ == "__main__":
+    mcp.run()
+</code></pre>
+
+	<h2>What each tool does</h2>
+
+	<p><strong><code>create_document</code></strong> — Creates a new .docx file at a given path. Optionally adds a centered title heading. This is always the first tool called when generating a new document from scratch.</p>
+
+	<p><strong><code>add_paragraph</code></strong> — Appends a paragraph to an existing document with an optional style. The style map keeps the Claude-facing API simple while mapping to Word's verbose internal style names.</p>
+
+	<p><strong><code>add_table</code></strong> — Adds a formatted table given a list of headers and a list of rows. Each row is a list of strings. The header row is automatically bolded.</p>
+
+	<p><strong><code>add_page_break</code></strong> — Adds a page break, useful for multi-section documents like reports.</p>
+
+	<p><strong><code>read_document_text</code></strong> — Returns the plain text content of a document, useful for verifying what was generated or for editing existing documents.</p>
+
+	<p><strong><code>list_document_styles</code></strong> — Lists available paragraph styles so Claude can make informed choices about styling.</p>
+
+	<h2>Registering the server with Claude Code</h2>
+
+	<p>Claude Code reads MCP server configurations from its settings file. On Windows this is at <code>%USERPROFILE%\.claude\settings.json</code>. Add your server under the <code>mcpServers</code> key:</p>
+
+	<pre><code>{
+  "mcpServers": {
+    "word": {
+      "command": "python",
+      "args": ["C:/path/to/word-mcp-server/server.py"],
+      "env": {}
+    }
+  }
+}</code></pre>
+
+	<p>After saving, restart Claude Code. You can verify it loaded by running <code>/mcp</code> in a Claude Code session — you should see your "word" server listed with its tools.</p>
+
+	<h2>Using it in a Claude Code session</h2>
+
+	<p>Once registered, you can direct Claude Code to generate Word documents in plain English:</p>
+
+	<pre><code>Create a one-page service agreement at C:/Docs/service-agreement.docx.
+Include: title "Service Agreement", a section for Services Provided,
+a section for Payment Terms, a section for Term and Termination,
+and a signature block at the end.</code></pre>
+
+	<p>Claude Code will call your MCP tools in sequence — <code>create_document</code>, then multiple <code>add_paragraph</code> calls with appropriate styles — and produce a properly formatted .docx file.</p>
+
+	<div class="tip-box">
+		<strong>Tip</strong>
+		The more specific your instructions, the better the output. Tell Claude what sections you want, what tone to use, and any content that must appear verbatim (e.g., legal language). It will fill in the structure and boilerplate.
+	</div>
+
+	<h2>Extending the server</h2>
+
+	<p>The six tools above are a useful foundation, but you can go much further. Some extensions worth adding:</p>
+
+	<ul>
+		<li><strong>Bullet lists</strong> — Add a tool that accepts a list of strings and creates a bulleted list using the "List Bullet" style</li>
+		<li><strong>Bold/italic runs</strong> — Add a tool for appending a paragraph where specific words are formatted inline</li>
+		<li><strong>Header and footer</strong> — Set company name, date, or page numbers in document headers/footers</li>
+		<li><strong>Insert image</strong> — Use <code>doc.add_picture()</code> to embed a logo or chart</li>
+		<li><strong>Replace text</strong> — Open an existing template document and replace placeholder strings (useful for mail merge-style workflows)</li>
+	</ul>
+
+	<p>The pattern is always the same: write a Python function, decorate it with <code>@mcp.tool()</code>, give it a clear docstring (Claude reads this to understand when and how to use the tool), and save the file.</p>
+
+	<h2>Real-world uses</h2>
+
+	<p>For Atlanta businesses, a Word automation MCP server is immediately useful for:</p>
+
+	<ul>
+		<li>Generating client proposals or statements of work from a standard template</li>
+		<li>Producing weekly or monthly reports from database query results</li>
+		<li>Creating form letters, notices, or contracts in bulk</li>
+		<li>Automating compliance documentation that follows a consistent structure</li>
+	</ul>
+
+	<p>In each case, a few minutes of prompting replaces what used to be 30–60 minutes of manual document assembly.</p>
+
+	<h2>Next steps</h2>
+
+	<p>If you want to go deeper: the <code>python-docx</code> documentation covers the full API for styles, sections, and formatting. And Anthropic's MCP specification documents the full protocol if you want to add features like prompts or resource subscriptions beyond simple tools.</p>
+
+	<p>If you're building something like this for your business and want help with the implementation, feel free to <a href="../../contact.html">get in touch</a>. Document automation is one of the more satisfying problems to solve — the value is immediately obvious and the ROI is usually fast.</p>
+
+</article>
+
+<div class="callout-strip">
+	<h2>Need custom automation for your business?</h2>
+	<p>I build Python automation, Word/Excel integrations, and AI-powered workflows for Atlanta-area businesses.</p>
+	<a href="../../contact.html" class="btn">Start a conversation</a>
+</div>
+
+<footer>
+	<div>&copy; 2026 RCMSoft LLC &mdash; Atlanta, GA</div>
+	<div><a href="../../contact.html">Contact</a> &middot; <a href="../../about.html">About</a> &middot; <a href="../../articles.html">Articles</a></div>
+</footer>
+
+</body>
+</html>

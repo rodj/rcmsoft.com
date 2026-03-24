@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /articles/drafts/
+
+Sitemap: https://rcmsoft.com/sitemap.xml

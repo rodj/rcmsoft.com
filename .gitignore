@@ -1,0 +1,12 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.swp
+
+# Jekyll (not used, but prevents accidental build artifacts)
+_site/
+.jekyll-cache/
+ajc/

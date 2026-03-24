@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Getting Started with Claude Code — RCMSoft</title>
+	<meta name="description" content="A practical introduction to Claude Code, Anthropic's AI coding assistant. Learn what it is, how to install it, and how to use it effectively for real software development.">
+	<link rel="stylesheet" href="../../style.css">
+	<!-- Google Analytics: replace G-XXXXXXXXXX -->
+	<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+	<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script> -->
+</head>
+<body>
+
+<header>
+	<div class="site-title">RCM<span>Soft</span></div>
+</header>
+
+<nav>
+	<a href="../../index.html">Home</a>
+	<a href="../../index.html#services">Services</a>
+	<a href="../../articles.html" class="active">Articles</a>
+	<a href="../../about.html">About</a>
+	<a href="../../contact.html">Contact</a>
+</nav>
+
+<div class="article-header">
+	<span class="tag">AI Tools</span>
+	<h1>Getting Started with Claude Code</h1>
+	<p class="article-meta">By Robert Martin &mdash; RCMSoft &mdash; [PUBLISH DATE]</p>
+</div>
+
+<article class="content">
+
+	<p>If you've been curious about AI coding assistants but found tools like GitHub Copilot a bit shallow — good for autocomplete but not much more — Claude Code is worth a closer look. It's a command-line tool from Anthropic that gives you a genuine AI collaborator in your terminal: one that can read your entire codebase, reason about it, write multi-file changes, run tests, and work through problems iteratively.</p>
+
+	<p>This article is a practical introduction. I'll explain what Claude Code actually is, how it differs from other AI coding tools, how to get it running, and how to use it effectively from day one.</p>
+
+	<h2>What is Claude Code?</h2>
+
+	<p>Claude Code is a CLI (command-line interface) tool that wraps Anthropic's Claude AI model with a set of capabilities specifically designed for software development. Unlike a chat interface where you paste code snippets back and forth, Claude Code runs in your terminal and has direct access to your project files. It can:</p>
+
+	<ul>
+		<li>Read any file in your project without you having to paste it</li>
+		<li>Make edits to multiple files in a single operation</li>
+		<li>Run shell commands, tests, and build scripts</li>
+		<li>Search your codebase by file pattern or content</li>
+		<li>Use external tools via MCP (Model Context Protocol) servers</li>
+	</ul>
+
+	<p>The result is something that feels much closer to pair programming with a knowledgeable colleague than to a glorified autocomplete engine.</p>
+
+	<h2>How it differs from GitHub Copilot</h2>
+
+	<p>Copilot lives inside your editor and makes inline suggestions as you type. It's excellent for that use case — filling in boilerplate, completing function signatures, suggesting common patterns. But it works at the scope of what's visible in your current file and doesn't reason across your whole project.</p>
+
+	<p>Claude Code works at a higher level of abstraction. You describe what you want to accomplish and it figures out what files to touch, what changes to make, and how they fit together. You're directing the work rather than accepting or rejecting individual suggestions. The two tools complement each other well — use Copilot for line-level editing and Claude Code for feature-level changes.</p>
+
+	<h2>Installation</h2>
+
+	<p>Claude Code requires Node.js 18 or higher. Install it with npm:</p>
+
+	<pre><code>npm install -g @anthropic-ai/claude-code</code></pre>
+
+	<p>After installation, run <code>claude</code> from any directory to start an interactive session. The first time you run it, you'll be prompted to authenticate with your Anthropic account. You'll need an Anthropic API key, which requires a paid account (as of 2026, there's no free tier for Claude Code).</p>
+
+	<div class="tip-box">
+		<strong>Pro Tip</strong>
+		Run <code>claude</code> from the root of your project, not a subfolder. Claude Code will automatically explore your directory tree from wherever you launch it, and starting at the root gives it the best context about your project structure.
+	</div>
+
+	<h2>Your first session</h2>
+
+	<p>Once you've launched Claude Code in a project directory, you can just describe what you want in plain English. Some examples of effective prompts to start with:</p>
+
+	<ul>
+		<li><em>"Explain how this project is structured and what the main components do."</em> — Good for getting oriented before making changes.</li>
+		<li><em>"Find all places where we connect to the database and tell me what connection string format we're using."</em> — Good for understanding patterns before you change them.</li>
+		<li><em>"Add a new API endpoint that returns a list of customers filtered by city. Follow the same pattern as the existing endpoints."</em> — Good for feature additions that should follow established conventions.</li>
+	</ul>
+
+	<h2>The CLAUDE.md file</h2>
+
+	<p>One of the most useful features for ongoing projects is the <code>CLAUDE.md</code> file. If you place a file with this name in your project root (or any subdirectory), Claude Code will automatically read it at the start of every session. Use it to document:</p>
+
+	<ul>
+		<li>How to build and run the project</li>
+		<li>Architectural conventions and decisions you want followed</li>
+		<li>Things Claude should never do in this codebase (e.g., "never commit directly to main")</li>
+		<li>Key file locations and what they contain</li>
+	</ul>
+
+	<p>A good <code>CLAUDE.md</code> is the difference between Claude Code needing to rediscover your project's conventions on every session versus picking up exactly where you left off.</p>
+
+	<h2>Practical tips</h2>
+
+	<p><strong>Be specific about constraints.</strong> Instead of "add error handling," say "add error handling that logs to our existing logger at /src/utils/logger.ts and returns a 400 status for validation errors, 500 for everything else." The more context you give, the less back-and-forth you'll need.</p>
+
+	<p><strong>Ask for a plan before execution.</strong> For larger changes, ask Claude Code to describe what it plans to do before it does it. This catches misunderstandings early: "Before making any changes, tell me which files you'll touch and what you'll change in each."</p>
+
+	<p><strong>Use it for reading, not just writing.</strong> Claude Code's ability to search and summarize your codebase is genuinely valuable even when you're not making changes. "How does authentication work in this app?" can save 20 minutes of manual file reading.</p>
+
+	<p><strong>Review diffs before moving on.</strong> Claude Code shows you what it changed. Actually read those changes. It's almost always correct, but "almost always" isn't the same as "always," and a five-second review of a diff is much cheaper than debugging an incorrect assumption later.</p>
+
+	<h2>When to use it, when not to</h2>
+
+	<p>Claude Code is excellent for: implementing features you've already thought through, refactoring toward a pattern you can describe, writing tests for existing code, and understanding unfamiliar codebases. It's less suited to open-ended architectural exploration where the requirements themselves are unclear — that kind of thinking is still best done between humans before involving an AI tool.</p>
+
+	<h2>Getting more out of it</h2>
+
+	<p>Once you're comfortable with the basics, look into MCP (Model Context Protocol) servers — Claude Code's plugin system that lets it connect to external tools like databases, APIs, and web services. In a future article I'll walk through building a custom MCP server to automate Microsoft Word document creation, which is a great example of what's possible when you extend Claude Code's reach beyond your codebase.</p>
+
+	<p>If you're curious whether Claude Code (or AI-assisted development more broadly) could help your business, feel free to <a href="../../contact.html">reach out</a>. It's a genuinely useful tool and I'm happy to talk through how it might apply to your situation.</p>
+
+</article>
+
+<div class="callout-strip">
+	<h2>Want help automating your business workflows?</h2>
+	<p>I build custom software and automation solutions for Atlanta-area businesses. Let's talk about your project.</p>
+	<a href="../../contact.html" class="btn">Get in touch</a>
+</div>
+
+<footer>
+	<div>&copy; 2026 RCMSoft LLC &mdash; Atlanta, GA</div>
+	<div><a href="../../contact.html">Contact</a> &middot; <a href="../../about.html">About</a> &middot; <a href="../../articles.html">Articles</a></div>
+</footer>
+
+</body>
+</html>
